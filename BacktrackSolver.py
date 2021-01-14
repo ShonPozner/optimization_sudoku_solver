@@ -1,10 +1,8 @@
 import math
-
 from backtraking.ArcConsistency import ArcConsistency
 from backtraking.BackTrack import BackTracking
 from backtraking.CUtil import CUtil
 from backtraking.Constraint import Constraint
-
 
 
 def solve_using_arc_consistency(constraint):
@@ -16,12 +14,11 @@ def solve_using_arc_consistency(constraint):
     return None
 
 
-class Backtracking_solver():
+class BacktrackingSolver:
     def __init__(self, boards, print_to_screen=True, arc=True, forward_check=True, mrv=True):
 
-        self.boards_string = []  # an array containing all the boards string
         self.box_size = []  # box size for each sudoku
-        self.boards_dic = []  # an array containing all sudokus represented as dictionary
+        self.boards = []  # an array containing all sudokus represented as dictionary
         self.arc = arc  # use arc or not
         self.print_to_screen = print_to_screen
         self.fc = forward_check
@@ -37,26 +34,21 @@ class Backtracking_solver():
             self.box_size.append(box_size)
 
             constructed_sudoku = self.construct_sudoku(board, board_size)
-            self.boards_string.append(constructed_sudoku)
 
             board = CUtil.generate_board(constructed_sudoku, box_size)
-            self.boards_dic.append(board)
-
-        if self.print_to_screen:
-            print(f"\nStart solve {len(self.boards_string)} boards with Solver {self.__str__()}\n")
-
-    def get_initial_boards(self):
-        return self.boards_string
+            self.boards.append(board)
 
     def get_grid_sizes(self):
         return self.box_size
 
     def get_boards(self):
-        return self.boards_dic
+        return self.boards
 
     def solve(self):
-        succ = 0
-        for index, board in enumerate(self.boards_dic):
+        if self.print_to_screen:
+            print(f"\nStart solve {len(self.box_size)} boards with Solver {self.__str__()}\n")
+        success_counter = 0
+        for index, board in enumerate(self.boards):
             size_box = self.box_size[index]
             board_constraints = CUtil.generate_constraint_dictionary(size_box)
             constraint = Constraint(board, board_constraints, size_box)
@@ -70,7 +62,7 @@ class Backtracking_solver():
                     print(f" Board number {index+1} solve successfully using arc consistency only ")
                     if self.print_to_screen:
                         self.print_board(solve, constraint.grid_size)
-                    succ += 1
+                    success_counter += 1
                     continue
 
             solve = self.solve_using_backtrack(constraint)
@@ -85,9 +77,9 @@ class Backtracking_solver():
                 print(msg)
                 if self.print_to_screen:
                     self.print_board(solve, constraint.grid_size)
-                succ += 1
+                success_counter += 1
                 continue
-        return succ, len(self.box_size)
+        return success_counter, len(self.box_size)
 
     def solve_using_backtrack(self, constraint):
         back_track = BackTracking(self.fc)
@@ -113,7 +105,7 @@ class Backtracking_solver():
             start = i * sudoku_size
             end = sudoku_size * (i + 1)
             split_on_size = line[start: end]
-            row = Backtracking_solver.get_array(split_on_size)
+            row = BacktrackingSolver.get_array(split_on_size)
             sudoku.append(row)
 
         return sudoku
@@ -125,7 +117,6 @@ class Backtracking_solver():
             array.append(int(string))
 
         return array
-
 
     @staticmethod
     def print_board(board, size_box):

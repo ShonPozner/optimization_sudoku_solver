@@ -1,5 +1,6 @@
 import time
-import backtracking_solver as bk_solver
+import BacktrackSolver as BkSolver
+import LinearProgrammingSolver as LpSolver
 
 
 def read_from_txt(txt_file):
@@ -18,13 +19,15 @@ def solve_all(solver):
 
 def main():
     sudoku_fils = "sudoku_boards.txt"
+    sudoku_fils = "sudoku_boards_txt/sudoku_25.txt"
     boards = read_from_txt(sudoku_fils)
 
-    back_tracking_solver_solver = bk_solver.Backtracking_solver(boards, print_to_screen=True, arc=True,
-                                                                forward_check=True, mrv=True)
+    backtracking_solver = BkSolver.BacktrackingSolver(boards, print_to_screen=True, arc=True,
+                                                      forward_check=True, mrv=True)
 
-    solve_all(back_tracking_solver_solver)
+    Lp_solver = LpSolver.LinearProgrammingSolver(boards, print_to_screen=False)
 
+    solve_all(Lp_solver)
 
 
 if __name__ == '__main__':
