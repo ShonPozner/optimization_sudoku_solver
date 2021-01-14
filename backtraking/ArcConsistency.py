@@ -1,5 +1,6 @@
 import queue
 
+
 # https://www.youtube.com/watch?v=mo0gmLMC72E
 class ArcConsistency():
 
@@ -63,13 +64,15 @@ class ArcConsistency():
     """
         check if the value x is consistent (respecting the constraints) with all possible values of Y
     """
-    def is_consistent(self, constraint, x, X, Y):
+    @staticmethod
+    def is_consistent(constraint, x, X, Y):
         for y in constraint.board[Y]:
             if Y in constraint.neighbour[X] and y != x:
                 return True
         return False
 
-    def is_complete(self, constraint):
+    @staticmethod
+    def is_complete(constraint):
         for variable, value in constraint.board.items():
             if len(constraint.board[variable]) > 1:
                 return False

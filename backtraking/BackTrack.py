@@ -1,18 +1,10 @@
 from copy import deepcopy
-from backtraking import MinimumRemainingValueHeuristic
-from backtraking.ForwardCheck import *
 import random
 
-"""
-    By now we have a Constraint satisfaction problem. Now we have to assign values to each variable by 
-    satisfying all the constraints.
-"""
-class BackTracking():
+
+class BackTracking:
     def __init__(self, forward_check=True):
-        if forward_check:
-            self.forward_check = ForwardCheck()
-        else:
-            self.forward_check = None
+        self.forward_check = forward_check
     """
         In Backtracking, we start with a empty state. (No values to the variables).
         We then pick one variable from the set.
@@ -49,7 +41,7 @@ class BackTracking():
             Heuristics -> MRV (Minimum remaining value)
         """
         if mrv:
-            cell = MinimumRemainingValueHeuristic.get_minimum_remaining_value(state, constraint)
+            cell = self.get_minimum_remaining_value(state, constraint)
         else:
             cell = self.next_cell(state, constraint)
 
@@ -68,9 +60,9 @@ class BackTracking():
                 """
                 state[cell] = value
 
-                if self.forward_check is not None:
+                if self.forward_check:
                     deductions = {}
-                    deductions = self.forward_check.infer(state, deductions, constraint, cell, value)
+                    deductions = self.infer(state, deductions, constraint, cell, value)
                     if deductions != -1:
                         result = self.backtrack(state, constraint, mrv)
                         if result != -1:
@@ -88,25 +80,70 @@ class BackTracking():
 
         return -1
 
-    def is_complete(self, assignment, constraint):
+    @staticmethod
+    def is_complete(assignment, constraint):
         return set(assignment.keys()) == set(constraint.board.keys())
 
-
-    def next_cell(self, state, constraint):
+    @staticmethod
+    def next_cell(state, constraint):
         unassigned_cell = {}
         for cell in constraint.board:
             if cell not in state.keys():
                 return cell
 
-    def select_random_variables(self, state, constraint):
+    @staticmethod
+    def select_random_variables(state, constraint):
         unassigned_cell = {}
         for cell in constraint.board:
             if cell not in state.keys():
                 unassigned_cell.update({cell: len(constraint.board[cell])})
-        return list(unassigned_cell.keys())[random.randint(0,len(unassigned_cell) - 1)]
+        return list(unassigned_cell.keys())[random.randint(0, len(unassigned_cell) - 1)]
 
-    def is_consistent(self, var, value, assignment, constraint):
+    @staticmethod
+    def is_consistent(var, value, assignment, constraint):
         for neighbor in constraint.neighbour[var]:
             if neighbor in assignment.keys() and assignment[neighbor] == value:
                 return False
         return True
+
+    """
+        Forward checking is mainly used for early detection of failures.
+        Terminate search when any variable has no legal values.
+
+        1. assign value to a variable[a square or a box]
+        2. iterate over the peers of the square
+        3. if the peers is not already assigned a value and if the given value is in probable list of values (domain)
+            for the neighbour, remove that value from the neighbour's probable list(domain)
+
+            In other words, remove values for neighbour from domain that are inconsistent with A
+    """
+    @staticmethod
+    def get_left_over_values_in_domain(constraint, neighbor, value):
+        constraint.board[neighbor] = constraint.board[neighbor].replace(value, "")
+        return constraint.board[neighbor]
+
+    @staticmethod
+    def infer(state, deductions, constraint, cell, value):
+        deductions[cell] = value
+
+        for neighbor in constraint.neighbour[cell]:
+            if neighbor not in state and value in constraint.board[neighbor]:
+                if len(constraint.board[neighbor]) == 1:
+                    return -1
+                left_over_values = BackTracking.get_left_over_values_in_domain(constraint, neighbor, value)
+
+                if len(left_over_values) == 1:
+                    check = BackTracking.infer(state, deductions, constraint, neighbor, left_over_values)
+                    if check == -1:
+                        return -1
+        return deductions
+
+    @staticmethod
+    def get_minimum_remaining_value(state, constraint):
+        unassigned_cell = {}
+        for cell in constraint.board:
+            if cell not in state.keys():
+                unassigned_cell.update({cell: len(constraint.board[cell])})
+        minimum_remaining_value = min(unassigned_cell, key=unassigned_cell.get)
+        return minimum_remaining_value
+

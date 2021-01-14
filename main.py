@@ -21,7 +21,7 @@ def main():
     boards = read_from_txt(sudoku_fils)
 
     back_tracking_solver_solver = bk_solver.Backtracking_solver(boards, print_to_screen=True, arc=True,
-                                                                forward_check=True, mrv=False)
+                                                                forward_check=True, mrv=True)
 
     solve_all(back_tracking_solver_solver)
 
