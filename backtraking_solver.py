@@ -1,0 +1,155 @@
+import math
+
+from backtraking.ArcConsistency import ArcConsistency
+from backtraking.BackTrack import BackTracking
+from backtraking.CUtil import CUtil
+from backtraking.Constraint import Constraint
+
+
+
+def solve_using_arc_consistency(constraint):
+    arc = ArcConsistency(constraint)
+    arc_consistent_sudoku = arc.ac3(constraint)
+    check_complete = arc.is_complete(constraint)
+    if check_complete and arc_consistent_sudoku:
+        return arc_consistent_sudoku
+    return None
+
+
+class Backtraking_solver():
+    def __init__(self, boards, print_to_screen=True, arc=True, forward_check=True, mrv=True):
+
+        self.boards_string = []  # an array containing all the boards string
+        self.box_size = []  # box size for each sudoku
+        self.boards_dic = []  # an array containing all sudokus represented as dictionary
+        self.arc = arc  # use arc or not
+        self.print_to_screen = print_to_screen
+        self.fc = forward_check
+        self.mrv = mrv
+
+
+        for line_board in boards:
+
+            board = line_board.strip()  # strip the trailing "\n"
+
+            board_size = int(math.sqrt(len(board)))
+            box_size = int(math.sqrt(board_size))
+
+            self.box_size.append(box_size)
+
+            constructed_sudoku = self.construct_sudoku(board, board_size)
+
+            self.boards_string.append(constructed_sudoku)
+
+            board = CUtil.generate_board(constructed_sudoku, box_size)
+            self.boards_dic.append(board)
+
+        if self.print_to_screen:
+            # print(f"Start solve {len(self.boards_string)} boards ")
+            print(len(self.boards_string), "sudoku board(s) constructed")
+
+    def get_initial_boards(self):
+        return self.boards_string
+
+    def get_grid_sizes(self):
+        return self.box_size
+
+    def get_boards(self):
+        return self.boards_dic
+
+    def solve(self):
+        succ = 0
+        for index, board in enumerate(self.boards_dic):
+            size_box = self.box_size[index]
+            board_constraints = CUtil.generate_constraint_dictionary(size_box)
+            constraint = Constraint(board, board_constraints, size_box)
+
+            # print before arc
+            # self.print_board(board, size_box)
+
+            if self.arc:
+                solve = solve_using_arc_consistency(constraint)
+                if solve is not None:
+                    print(f" Board number {index+1} solve successfully using arc consistency only ")
+                    if self.print_to_screen:
+                        self.print_board(solve, constraint.grid_size)
+                    succ += 1
+                    continue
+
+            # print after arc
+            # self.print_board(board, size_box)
+
+            solve = self.solve_using_backtrack(constraint)
+            if solve is not None:
+                msg = f" Board number {index + 1} solve successfully using back tracing"
+                if self.mrv:
+                    msg += ", using MRV"
+                if self.fc:
+                    msg += ", using FC"
+                if self.arc:
+                    msg += ", using ARC"
+                print(msg)
+                if self.print_to_screen:
+                    self.print_board(solve, constraint.grid_size)
+                succ += 1
+                continue
+        return succ, len(self.box_size)
+
+    def solve_using_backtrack(self, constraint):
+        back_track = BackTracking(self.fc)
+        backtrack_sudoku = back_track.backtracking_search(constraint, self.mrv)
+        if backtrack_sudoku != -1:
+            return backtrack_sudoku
+        return None
+
+    def __str__(self):
+        return "Backtraking_solver"
+
+    @staticmethod
+    def construct_sudoku(line, sudoku_size):
+        sudoku = []
+        for i in range(sudoku_size):
+            start = i * sudoku_size
+            end = sudoku_size * (i + 1)
+            split_on_size = line[start: end]
+            row = Backtraking_solver.get_array(split_on_size)
+            sudoku.append(row)
+
+        return sudoku
+
+    @staticmethod
+    def get_array(strings):
+        array = []
+        for string in strings:
+            array.append(int(string))
+
+        return array
+
+
+    @staticmethod
+    def print_board(board, size_box):
+        sudoku_size = size_box**2
+
+        temp = [i for i in range(0, sudoku_size, size_box)]
+        for i, cell in enumerate(board.values()):
+            row, col = divmod(i, sudoku_size)
+            if col == 0:
+                if row in temp:
+                    print('+' + size_box * ((5* size_box*2 + 4) * '-' + '+'))
+            if col in temp:
+                print("| ", end="")
+
+            x = int((12 - len(cell))/2)
+            if len(cell)%2 == 0:
+                print(x * " " + cell + (x-1) * " ", end="")
+            else:
+                print(x * " " + cell + x * " ", end="")
+
+            if col == sudoku_size-1:
+                print("|")
+        print('+' + size_box * ((5 * size_box * 2 + 4) * '-' + '+') + "\n")
+
+
+
+
+
