@@ -16,7 +16,7 @@ def solve_using_arc_consistency(constraint):
     return None
 
 
-class Backtraking_solver():
+class Backtracking_solver():
     def __init__(self, boards, print_to_screen=True, arc=True, forward_check=True, mrv=True):
 
         self.boards_string = []  # an array containing all the boards string
@@ -27,26 +27,23 @@ class Backtraking_solver():
         self.fc = forward_check
         self.mrv = mrv
 
-
         for line_board in boards:
 
             board = line_board.strip()  # strip the trailing "\n"
 
+            # calculate size of the board and the box
             board_size = int(math.sqrt(len(board)))
             box_size = int(math.sqrt(board_size))
-
             self.box_size.append(box_size)
 
             constructed_sudoku = self.construct_sudoku(board, board_size)
-
             self.boards_string.append(constructed_sudoku)
 
             board = CUtil.generate_board(constructed_sudoku, box_size)
             self.boards_dic.append(board)
 
         if self.print_to_screen:
-            # print(f"Start solve {len(self.boards_string)} boards ")
-            print(len(self.boards_string), "sudoku board(s) constructed")
+            print(f"\nStart solve {len(self.boards_string)} boards with Solver {self.__str__()}\n")
 
     def get_initial_boards(self):
         return self.boards_string
@@ -76,9 +73,6 @@ class Backtraking_solver():
                     succ += 1
                     continue
 
-            # print after arc
-            # self.print_board(board, size_box)
-
             solve = self.solve_using_backtrack(constraint)
             if solve is not None:
                 msg = f" Board number {index + 1} solve successfully using back tracing"
@@ -103,7 +97,14 @@ class Backtraking_solver():
         return None
 
     def __str__(self):
-        return "Backtraking_solver"
+        msg = "Backtracking Solver"
+        if self.mrv:
+            msg += ", using MRV"
+        if self.fc:
+            msg += ", using FC"
+        if self.arc:
+            msg += ", using ARC"
+        return msg
 
     @staticmethod
     def construct_sudoku(line, sudoku_size):
@@ -112,7 +113,7 @@ class Backtraking_solver():
             start = i * sudoku_size
             end = sudoku_size * (i + 1)
             split_on_size = line[start: end]
-            row = Backtraking_solver.get_array(split_on_size)
+            row = Backtracking_solver.get_array(split_on_size)
             sudoku.append(row)
 
         return sudoku
