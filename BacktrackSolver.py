@@ -25,7 +25,6 @@ class BacktrackingSolver:
         self.mrv = mrv
 
         for line_board in boards:
-
             board = line_board.strip()  # strip the trailing "\n"
 
             # calculate size of the board and the box
@@ -59,12 +58,13 @@ class BacktrackingSolver:
             if self.arc:
                 solve = solve_using_arc_consistency(constraint)
                 if solve is not None:
-                    print(f" Board number {index+1} solve successfully using arc consistency only ")
+                    print(f" Board number {index + 1} solve successfully using arc consistency only ")
                     if self.print_to_screen:
                         self.print_board(solve, constraint.grid_size)
                     success_counter += 1
                     continue
 
+            self.print_board(board, constraint.grid_size)
             solve = self.solve_using_backtrack(constraint)
             if solve is not None:
                 msg = f" Board number {index + 1} solve successfully using back tracing"
@@ -80,6 +80,7 @@ class BacktrackingSolver:
                 success_counter += 1
                 continue
         return success_counter, len(self.box_size)
+
 
     def solve_using_backtrack(self, constraint):
         back_track = BackTracking(self.fc)
@@ -114,34 +115,28 @@ class BacktrackingSolver:
     def get_array(strings):
         array = []
         for string in strings:
-            array.append(int(string))
-
+            array.append(string)
         return array
 
     @staticmethod
     def print_board(board, size_box):
-        sudoku_size = size_box**2
-
+        sudoku_size = size_box ** 2
+        sort_board = dict(sorted(board.items()))
         temp = [i for i in range(0, sudoku_size, size_box)]
-        for i, cell in enumerate(board.values()):
+        for i, cell in enumerate(sort_board.values()):
             row, col = divmod(i, sudoku_size)
             if col == 0:
                 if row in temp:
-                    print('+' + size_box * ((5* size_box*2 + 4) * '-' + '+'))
+                    print('+' + size_box * ((5 * size_box * 2 + 4) * '-' + '+'))
             if col in temp:
                 print("| ", end="")
 
-            x = int((12 - len(cell))/2)
-            if len(cell)%2 == 0:
-                print(x * " " + cell + (x-1) * " ", end="")
+            x = int((12 - len(cell)) / 2)
+            if len(cell) % 2 == 0:
+                print(x * " " + cell + (x - 1) * " ", end="")
             else:
                 print(x * " " + cell + x * " ", end="")
 
-            if col == sudoku_size-1:
+            if col == sudoku_size - 1:
                 print("|")
         print('+' + size_box * ((5 * size_box * 2 + 4) * '-' + '+') + "\n")
-
-
-
-
-

@@ -1,3 +1,5 @@
+import string
+
 class CUtil:
 
     # Returns a dictionary containing the cell UID as they key and the data for the cell as the value
@@ -8,12 +10,20 @@ class CUtil:
         iterator = 0
         board_identifiers = CUtil.__generate_board_identifiers(grid_size)
 
+        # The default values
+        value_in_board = [str(i) for i in range(1, 10)]
+        # Add additional values ​​according to the size of the table
+        value_in_board.extend(list(string.ascii_uppercase[0:int(grid_size ** 2) - 9]))
+        candid = ''
+        for char in value_in_board:
+            candid += char
+
         for row in initial_board:
             for data in row:
                 identifier = board_identifiers[iterator]
-                board_dictionary[identifier] = str(data)
-                if data == 0:
-                    board_dictionary[identifier] = "123456789"
+                board_dictionary[identifier] = data
+                if data == '0':
+                    board_dictionary[identifier] = candid
                 iterator += 1
 
         return board_dictionary

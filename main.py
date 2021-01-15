@@ -19,7 +19,7 @@ def solve_all(solver):
 
 def main():
     sudoku_fils = "sudoku_boards.txt"
-    sudoku_fils = "sudoku_boards_txt/sudoku_25.txt"
+    # sudoku_fils = "sudoku_boards_txt/sudoku_16.txt"
     boards = read_from_txt(sudoku_fils)
 
     backtracking_solver = BkSolver.BacktrackingSolver(boards, print_to_screen=True, arc=True,
@@ -27,7 +27,7 @@ def main():
 
     Lp_solver = LpSolver.LinearProgrammingSolver(boards, print_to_screen=False)
 
-    solve_all(Lp_solver)
+    solve_all(backtracking_solver)
 
 
 if __name__ == '__main__':
