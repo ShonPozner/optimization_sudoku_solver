@@ -1,7 +1,7 @@
 # https://www.coin-or.org/PuLP/pulp.html
 # https://www.coin-or.org/PuLP/CaseStudies/a_sudoku_problem.html
 # https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html
-
+import time
 from pulp import *
 import pulp as pl
 
@@ -48,9 +48,10 @@ def display_sudoku_matrix(matrix, numbers, rows):
 
 
 class LinearProgrammingSolver:
-    def __init__(self, boards, print_to_screen=True):
+    def __init__(self, boards, print_to_screen=True, print_to_file=None):
         self.boards = boards
         self.print_to_screen = print_to_screen
+        self.print_to_file = print_to_file
 
     def __str__(self):
         return "Linear Programming Solver"
@@ -63,6 +64,7 @@ class LinearProgrammingSolver:
             print(f"\nStart solve {len(self.boards)} boards with Solver {self.__str__()}\n")
         success_counter = 0
         for board_number, line_board in enumerate(self.boards):
+            start = time.time()
             board = line_board.strip()  # strip the trailing "\n"
             size = int(len(board) ** 0.5)
 
@@ -126,10 +128,13 @@ class LinearProgrammingSolver:
             solver = pl.PULP_CBC_CMD(msg=False, threads=1)
 
             prob.solve(solver)
+            end = time.time()
 
             # The status of the solution is printed to the screen
             # print("Status:", LpStatus[prob.status])
             if prob.status == 1:
+                self.print_to_file.write(
+                    f"{board_number + 1}, {0}, {end - start}\n")
                 print(f"\n Board number {board_number + 1} solve successfully, using {self.__str__()}")
                 if self.print_to_screen:
                     display_sudoku_matrix(matrix_choices, value_in_board, rows_board)
@@ -142,7 +147,6 @@ class LinearProgrammingSolver:
             del value_in_board
             del rows_board
             del prob
-
 
         return success_counter, len(self.boards)
 

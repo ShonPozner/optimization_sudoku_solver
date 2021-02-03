@@ -5,6 +5,7 @@ import random
 class BackTracking:
     def __init__(self, forward_check=True):
         self.forward_check = forward_check
+        self.time = 0
     """
         In Backtracking, we start with a empty state. (No values to the variables).
         We then pick one variable from the set.
@@ -67,7 +68,10 @@ class BackTracking:
                         result = self.backtrack(state, constraint, mrv)
                         if result != -1:
                             return result
-
+                    self.time += 1
+                    if self.time > 100000000:
+                        del state[cell]
+                        return -1
                     del state[cell]
                     constraint.board.update(domain)
 
@@ -75,6 +79,10 @@ class BackTracking:
                     result = self.backtrack(state, constraint, mrv)
                     if result != -1:
                         return result
+                    self.time += 1
+                    if self.time > 100000000:
+                        del state[cell]
+                        return -1
                     del state[cell]
                     constraint.board.update(domain)
 
