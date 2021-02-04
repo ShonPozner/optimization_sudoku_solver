@@ -1,6 +1,7 @@
 # https://www.coin-or.org/PuLP/pulp.html
 # https://www.coin-or.org/PuLP/CaseStudies/a_sudoku_problem.html
 # https://coin-or.github.io/pulp/guides/how_to_configure_solvers.html
+
 import time
 from pulp import *
 import pulp as pl
@@ -10,10 +11,10 @@ import string
 
 def data_constraint(board, size):
     """ A function that returns the constraints of the numbers given in the game board
-            :param board: Sudoku board - a list of char (0 empty, other is value of the cell)
-            :param size: Size of row / column of the board
-            :return: constraint: list of list that represent the board data in the 3D matrix
-            """
+    :param board: Sudoku board - a list of char (0 empty, other is value of the cell)
+    :param size: Size of row / column of the board
+    :return: constraint: list of list that represent the board data in the 3D matrix
+    """
     constraint = []
     for i, cell in enumerate(board):
         if cell != '0':
@@ -24,10 +25,10 @@ def data_constraint(board, size):
 
 def display_sudoku_matrix(matrix, numbers, rows):
     """ A function that get matrix board sudoku and print to screen
-              :param matrix: Sudoku 3D matrix board
-              :param numbers: An array of all the values ​​that can be as values ​​in the board
-              :param rows: An array of all the numbers of rows and column
-              """
+      :param matrix: Sudoku 3D matrix board
+      :param numbers: An array of all the values ​​that can be as values ​​in the board
+      :param rows: An array of all the numbers of rows and column
+      """
     size = len(numbers)
     square_root_size = int(size ** 0.5)
     # Create an array of all the values ​​in which we want to print a border in the table
@@ -119,7 +120,7 @@ class LinearProgrammingSolver:
             for constrain in constraint_given:
                 prob += matrix_choices[constrain[0]][constrain[1]][constrain[2]] == 1, ""
 
-            # Todo delete all this
+            # Change solver
             # The problem data is written to an .lp file
             # prob.writeLP("Sudoku.lp")
             # solver = pulp.getSolver('CPLEX_CMD')
@@ -142,6 +143,7 @@ class LinearProgrammingSolver:
             else:
                 print(f"\n Board number {board_number + 1} failed, using {self.__str__()}")
 
+            # Remove all data
             del board
             del matrix_choices
             del value_in_board

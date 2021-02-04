@@ -176,4 +176,4 @@ class BacktrackingSolver:
 
             if col == sudoku_size - 1:
                 print("|")
-        print('+' + size_box * (( size_box * 2 + 4) * '-' + '+') + "\n")
+        print('+' + size_box * ((size_box * 2 + 4) * '-' + '+') + "\n")

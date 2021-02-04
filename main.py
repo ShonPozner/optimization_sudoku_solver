@@ -35,42 +35,12 @@ def solve_all(solver):
     print(msg)
 
 
-# todo delete
-def test():
-    sudoku_files = [("sudoku_boards_txt/try.txt", "_try")]
-
-    solvers = ["bk_arc_fc_mrv", "bk_arc_fc", "bk_fc_mrv", "bk_arc_mrv", "bk_arc", "bk_fc", "bk_mrv" "bk"]
-    solvers = ["bk_arc_fc_mrv"]
-
-    f_d = open("MAIN.txt", 'w') #tODO DELET
-
-    for file in sudoku_files:
-        boards = read_from_txt(file[0])
-        for solver in solvers:
-            f = open(solver+file[1]+".txt", 'w')
-            arc, mrv, fc = False, False, False
-
-            if "arc" in solver:
-                arc = True
-            if "mrv" in solver:
-                mrv = True
-            if "fc" in solver:
-                fc = True
-
-            backtracking_solver = BkSolver.BacktrackingSolver(boards, print_to_screen=True, arc=arc,
-                                                              forward_check=fc, mrv=mrv, print_to_file=None)
-            solve_all(backtracking_solver, f_d) #todo delete ft
-            f.close()
-            del backtracking_solver
-    f_d.close()
-
-
 def create_report_easy_backtracking():
     """ create_report_easy_backtracking: For report only - create files of easy board result solved
         all the Heuristics
         """
     # List of sudokus files to solve
-    sudoku_files = [("sudoku_boards_txt/easy.txt", "_easy")]
+    sudoku_files = [("sudoku_boards_txt/easy_20.txt", "_easy")]
     # List of solvers name
     solvers = ["bk_arc_fc_mrv", "bk_arc_fc", "bk_fc_mrv", "bk_arc_mrv", "bk_arc", "bk_fc", "bk_mrv"]
 
@@ -101,10 +71,9 @@ def create_report_hard_backtracking():
         all the Heuristics
         """
     # List of sudokus files to solve
-    sudoku_files = [("sudoku_boards_txt/hard.txt", "_hard")]
+    sudoku_files = [("sudoku_boards_txt/hard_20.txt", "_hard")]
     # List of solvers name
-    solvers = ["bk_arc_fc_mrv", "bk_arc_fc", "bk_fc_mrv", "bk_arc_mrv", "bk_arc", "bk_fc", "bk_mrv"]
-    solvers = ["bk_arc", "bk_fc", "bk_mrv"] #Todo delete ->
+    solvers = ["bk_arc_fc_mrv", "bk_arc_fc", "bk_fc_mrv", "bk_arc_mrv"]
 
     for file in sudoku_files:
         boards = read_from_txt(file[0])
@@ -130,7 +99,7 @@ def create_report_hard_backtracking():
 
 def create_report_lp_and_bt():
     """ create_report_lp_and_bt: For report only - create files of lr and br all Heuristics
-                            """
+    """
     # List of sudokus files to solve
     sudoku_files = [("sudoku_boards_txt/easy_1000.txt", "_easy_1000"), ("sudoku_boards_txt/sudoku_16.txt", "_big_16"), ("sudoku_boards_txt/hard_95.txt", "_hard_95"), ("sudoku_boards_txt/sudoku_25.txt", "_huge_25")]
     # List of solvers name
@@ -170,7 +139,7 @@ def start_solve_user_boards():
         board_difficult = input(f"What type of board would you like to solve?\n\t"
                                 f"1. Easy 9X9\n\t2. Hard 9X9\n\t3. Large 16X16\n\t4. Huge 25X25\n")
         if board_difficult == "1":
-            board = random_line("sudoku_boards_txt/easy_50.txt")
+            board = random_line("sudoku_boards_txt/easy_1000.txt")
         elif board_difficult == "2":
             board = random_line("sudoku_boards_txt/hard_95.txt")
         elif board_difficult == "3":
@@ -207,18 +176,16 @@ def start_solve_user_boards():
 
 
 def main():
-    # while True:
-    #     select = input("Select one of the options:\n\t1. Solve Sudoku\n\t2. Create report\n\n\t9. Exit\n")
-    #     if select == "1":
-    #         start_solve_user_boards()
-    #     elif select == "2":
-    #         # create_report_easy_backtracking()
-    #         # create_report_hard_backtracking()
-    #         create_report_lp_and_bt()
-    #     elif select == "9":
-    #         break
-
-    create_report_lp_and_bt()
+    while True:
+        select = input("Select one of the options:\n\t1. Solve Sudoku\n\t2. Create report\n\n\t9. Exit\n")
+        if select == "1":
+            start_solve_user_boards()
+        elif select == "2":
+            create_report_easy_backtracking()
+            create_report_hard_backtracking()
+            create_report_lp_and_bt()
+        elif select == "9":
+            break
 
 
 if __name__ == '__main__':
