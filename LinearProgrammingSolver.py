@@ -134,7 +134,8 @@ class LinearProgrammingSolver:
             # The status of the solution is printed to the screen
             # print("Status:", LpStatus[prob.status])
             if prob.status == 1:
-                self.print_to_file.write(
+                if self.print_to_file != None:
+                    self.print_to_file.write(
                     f"{board_number + 1}, {0}, {end - start}\n")
                 print(f"\n Board number {board_number + 1} solve successfully, using {self.__str__()}")
                 if self.print_to_screen:
