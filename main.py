@@ -134,7 +134,7 @@ def start_solve_user_boards():
     """ Main program in normal mode:
                         Asks which sudoku to solve in which, and with which method of solving
                         """
-    while input("Select one of the options:\n\t1. Solve sudoku\n\t9. Exit\n") != "9":
+    while True:
 
         board_difficult = input(f"What type of board would you like to solve?\n\t"
                                 f"1. Easy 9X9\n\t2. Hard 9X9\n\t3. Large 16X16\n\t4. Huge 25X25\n")
@@ -174,16 +174,21 @@ def start_solve_user_boards():
 
         solve_all(solver)
 
+        if input("To exit Press - E\n") == "E":
+            break
+
 
 def main():
     while True:
-        select = input("Select one of the options:\n\t1. Solve Sudoku\n\t2. Create report\n\n\t9. Exit\n")
+        select = input("Select one of the options:\n\t1. Solve another Sudoku\n\t2. Create report\n\n\t9. Exit\n")
         if select == "1":
             start_solve_user_boards()
         elif select == "2":
-            create_report_easy_backtracking()
-            create_report_hard_backtracking()
-            create_report_lp_and_bt()
+            if  input("The process of building the report takes several hours,"
+                      " if you are sure you want to continue, press y\n") == "y":
+                create_report_easy_backtracking()
+                create_report_hard_backtracking()
+                create_report_lp_and_bt()
         elif select == "9":
             break
 
