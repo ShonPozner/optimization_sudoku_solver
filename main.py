@@ -24,6 +24,28 @@ def random_line(text_file):
     return [my_line+"\n"]
 
 
+def display_sudoku_problem(input_board):
+    """ A function that get board sudoku and print to screen
+                 :param input_board: Sudoku board - a list of char (0 empty, other is value of the cell)
+                 """
+    board = []
+    board[:0] = input_board[0].strip()
+    size = int(len(board) ** 0.5)
+    square_root = int(size ** 0.5)
+    temp = [i for i in range(0, size, square_root)]
+    for i, cell in enumerate(board):
+        row, col = divmod(i, size)
+        if col == 0:
+            if row in temp:
+                print('+' + square_root * ((square_root*2 + 1) * '-' + '+'))
+        if col in temp:
+            print("| ", end="")
+        print(cell + " ", end="")
+        if col == size-1:
+            print("|")
+    print('+' + square_root * ((square_root * 2 + 1) * '-' + '+') + "\n")
+
+
 def solve_all(solver):
     """ Solve all of the boards and print time and results (how many solved)
         :param solver: Solver that we use
@@ -149,6 +171,9 @@ def start_solve_user_boards():
         else:
             print("Error Invalid selection")
             continue
+
+        print(f"The selected board is:\n ")
+        display_sudoku_problem(board)
 
         use_solver = input(f"What solver do you want to use?\n\t"
                                 f"1. Backtracking \n\t2. Linear Programming\n")
